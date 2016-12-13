@@ -9,7 +9,7 @@ from ipwhois import IPWhois
 
 def swhois(ip):
     obj = IPWhois(ip)
-    results = obj.lookup(get_referral=True)
+    results = obj.lookup_whois(get_referral=True)
     cc = results['asn_country_code']
     cidrs=[]
     for result_net in results['nets']:

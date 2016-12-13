@@ -22,7 +22,7 @@ class SortIpAddressFile:
         #ソート済みのipアドレスを重複なく管理する入れ物
         sortedIpAddressSet = set([])
         #分割ファイルをオープン
-        self.divIpAddressFile = opne(sefl.fileName,"r")
+        self.divIpAddressFile = open(self.fileName,"r")
         #分割ファイルから１行ずつ読み込む
         for readline in self.divIpAddressFile:
             #setに登録することで、IPアドレスの重複を省く
@@ -39,4 +39,3 @@ class SortIpAddressFile:
             self.sortIpAddressFile.write(setData)
         #ソート済みIPアドレスファイルを閉じる
         self.sortIpAddressFile.close()
-        
