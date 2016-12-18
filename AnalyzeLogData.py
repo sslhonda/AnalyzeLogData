@@ -3,6 +3,7 @@
 import DivIpAddressFile
 import SortIpAddressFile
 import MergeIpAddressFiles
+import os
 
 #TODO ドキュメンテーション文字列の書き方!!
 def AnalyzeLogData():

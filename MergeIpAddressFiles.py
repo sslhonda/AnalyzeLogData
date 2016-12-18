@@ -2,6 +2,7 @@
 
 import ipaddress
 from ipwhois import IPWhois
+import traceback,sys
 
 #TODO ドキュメンテーション文字列の書き方!!
 class MergeIpAddressFiles:
@@ -23,21 +24,7 @@ class MergeIpAddressFiles:
             sortFileName = "sortIpAddress{0:02d}.txt".format(no+1)
             #分割ファイルをオープンする
             sortIpAddressFile = open(sortFileName,"r")
-            for ipAddress in sortIpAddressFile:
-                ipAddress = ipAddress.replace("\n","")
-                ipAddress = ipAddress.replace("\r","")
-                #読み込んだIPアドレスにwhois
-                obj = IPWhois(ipAddress)
-                #何しているのかよくわからない
-                results = obj.lookup_whois(get_referral=True)
-                cc = results["asn_country_code"]
-                cidrs=[]
-                for result_net in results["nets"]:
-                    cidr = result_net["cidr"].split("/")[1]
-                    cidrs.append(int(cidr))
-                ipwithcidr = str(ipaddress.IPv4Network(ipAddress+"/"+str(max(cidrs)),False))
-                retstr = "{0}-->{1}{2}".format(ipAddress,ipwithcidr,cc)
-                print(retstr)
+            for retstr in sortIpAddressFile:
                 #1行ずつ読みながらSetに登録する
                 mergeSet.add(retstr)
             #分割ファイルをクローズする
@@ -46,6 +33,25 @@ class MergeIpAddressFiles:
         sortedMergeSet = sorted(mergeSet)
         #すべての分割ファイルから読み込んで、ソートしたものを１つのファイルに出力する
         mergeFile = open("resultMergeFile.txt","w")
-        for setData in sortedMergeSet:
-            mergeFile.write(setData)
+        for ipAddress in sortedMergeSet:
+            ipAddress = ipAddress.replace("\r","")
+            ipAddress = ipAddress.replace("\n","")
+            try:
+                obj = IPWhois(ipAddress)
+                results = obj.lookup_whois(get_referral=True)
+                cc = results["asn_country_code"]
+                cidrs=[]
+                for result_net in results["nets"]:
+                    cidr = result_net["cidr"].split("/")[1]
+                    cidrs.append(int(cidr))
+                    ipwithcidr = str(ipaddress.IPv4Network(ipAddress+"/"+str(max(cidrs)),False))
+                    retstr = "{0}-->{1}{2}\n".format(ipAddress,ipwithcidr,cc)
+                    print(retstr)
+            except Exception as err:
+                ex, ms, tb = sys.exc_info()
+                traceback.print_tb(tb)
+                #print(err)
+                retstr = "{0}-->exception!!\n".format(ipAddress)
+                print(retstr)
+            mergeFile.write(retstr)
         mergeFile.close()
