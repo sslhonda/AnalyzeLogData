@@ -54,4 +54,5 @@ class MergeIpAddressFiles:
                 retstr = "{0}-->exception!!\n".format(ipAddress)
                 print(retstr)
             mergeFile.write(retstr)
+        #マージファイルクローズ
         mergeFile.close()
